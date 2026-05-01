@@ -9,8 +9,59 @@
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <style>
+        /* MOBILE OPTIMIZATION */
+        @media (max-width: 768px) {
+            .nav-links { display: none !important; } /* Ficha menu za juu kwenye simu */
+            .hero h1 { font-size: 24px; }
+            .container { padding-bottom: 80px; } /* Space kwa ajili ya bottom nav */
+        }
+
+        /* BOTTOM NAVIGATION (APP STYLE) */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #000;
+            border-top: 1px solid #1a1a1a;
+            display: none;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px 0;
+            z-index: 9999;
+        }
+
+        @media (max-width: 768px) {
+            .bottom-nav { display: flex; }
+        }
+
+        .nav-item {
+            color: #888;
+            text-decoration: none;
+            font-size: 11px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            transition: 0.3s;
+        }
+
+        .nav-item i { font-size: 18px; margin-bottom: 2px; }
+        .nav-item.active { color: #D4AF37; }
+
+        /* THEME TOGGLE POSITION */
+        #theme-toggle {
+            background: none;
+            border: 1px solid #333;
+            border-radius: 50%;
+            padding: 5px;
+            color: white;
+        }
+    </style>
 </head>
 <body>
+    
     <div id="splash-screen">
         <div class="splash-content">
             <h1 class="splash-logo">MUUH</h1>
@@ -37,7 +88,7 @@
             <li><a href="#series-section">Series</a></li>
             <li><a href="javascript:void(0)" onclick="checkAdmin()" class="admin-btn">Admin</a></li>
         </ul>
-        <button id="theme-toggle" style="background:none; border:none; cursor:pointer; font-size:20px; margin-left:15px;">🌓</button>
+        <button id="theme-toggle">🌓</button>
     </nav>
 
     <header class="hero">
@@ -58,14 +109,20 @@
     </header>
 
     <main class="container">
-        <section id="recent-section" class="container">
+        <section id="recent-section">
             <h2 class="section-title">🆕 VIPYA KWENYE LAB</h2>
             <div id="recent-grid" class="horizontal-scroll"></div>
         </section>
 
-        <section id="trending-section" class="container">
+        <section id="trending-section">
             <h2 class="section-title">🔥 ZINAZOTIKISA (TRENDING)</h2>
             <div id="trending-grid" class="horizontal-scroll"></div>
+        </section>
+
+        <section id="actors-preview" style="margin-top:40px;">
+            <h2 class="section-title">🎭 TOP ACTORS</h2>
+            <div id="actors-grid" class="horizontal-scroll">
+                </div>
         </section>
 
         <section id="shorts-section" class="shorts-section">
@@ -73,19 +130,36 @@
             <div class="shorts-grid" id="shorts-grid"></div>
         </section>
 
-        <hr style="border:0; border-top:1px solid #222; margin:40px 0;">
-
         <section id="series-section" class="series-section">
             <h2 class="section-title">Series Zote</h2>
             <div class="series-grid" id="series-grid"></div>
         </section>
     </main>
 
-    <footer class="footer">
+    <div class="bottom-nav">
+        <a href="index.html" class="nav-item active">
+            <span>🏠</span>
+            <span>Home</span>
+        </a>
+        <a href="actors.html" class="nav-item">
+            <span>🎭</span>
+            <span>Actors</span>
+        </a>
+        <a href="podcasts.html" class="nav-item">
+            <span>🎙️</span>
+            <span>Podcast</span>
+        </a>
+        <a href="javascript:void(0)" onclick="checkAdmin()" class="nav-item">
+            <span>⚙️</span>
+            <span>Admin</span>
+        </a>
+    </div>
+
+    <footer class="footer" style="padding-bottom: 100px;">
         <p>&copy; 2026 MUUH SCRIPT & FILM LAB. All Rights Are Reserved.</p>
     </footer>
 
-    <a href="https://wa.me/255787579271" class="floating-btn" target="_blank">
+    <a href="https://wa.me/255787579271" class="floating-btn" target="_blank" style="bottom: 80px;">
         <span>MUUH Help</span>
     </a>
 
@@ -103,6 +177,5 @@
         }
     </script>
     <script src="app.js"></script>
-
 </body>
 </html>

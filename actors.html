@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACTORS | MUUH LAB</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { background: #050505; color: white; font-family: 'Poppins', sans-serif; }
+        
+        /* Hero Section ya Kinyama */
+        .actors-hero {
+            height: 40vh;
+            background: linear-gradient(rgba(0,0,0,0.7), #050505), url('https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&q=80&w=1000');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .actors-hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            color: #D4AF37;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+        }
+
+        /* Talent Grid */
+        .actors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 25px;
+            padding: 40px 5%;
+        }
+
+        .actor-card {
+            background: #111;
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid #222;
+            transition: 0.4s;
+            position: relative;
+        }
+
+        .actor-card:hover {
+            transform: translateY(-10px);
+            border-color: #D4AF37;
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.2);
+        }
+
+        .actor-img {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            filter: grayscale(30%);
+            transition: 0.4s;
+        }
+
+        .actor-card:hover .actor-img { filter: grayscale(0%); }
+
+        .actor-info {
+            padding: 15px;
+            text-align: center;
+            background: linear-gradient(transparent, #000);
+        }
+
+        .actor-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            color: #D4AF37;
+            margin-bottom: 5px;
+        }
+
+        .actor-role { font-size: 0.8rem; color: #888; text-transform: uppercase; }
+
+        .social-links {
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .social-links a { color: #D4AF37; text-decoration: none; font-size: 1.2rem; }
+
+        /* Bottom Nav baki nayo ile ile */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
+            display: flex; justify-content: space-around; padding: 12px 0;
+            border-top: 1px solid #1a1a1a; z-index: 1000;
+        }
+        .nav-item { color: #888; text-decoration: none; font-size: 10px; text-align: center; }
+        .nav-item.active { color: #D4AF37; }
+    </style>
+</head>
+<body>
+
+    <header class="actors-hero">
+        <h1>The Talents</h1>
+        <p>Faces of MUUH SCRIPT & FILM LAB</p>
+    </header>
+
+    <main>
+        <div class="actors-grid" id="actors-list">
+            <div class="actor-card">
+                <img src="https://via.placeholder.com/300x400" class="actor-img" alt="Actor">
+                <div class="actor-info">
+                    <h3 class="actor-name">Loading...</h3>
+                    <p class="actor-role">MUUH Talent</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="bottom-nav">
+        <a href="index.html" class="nav-item"><span>🏠</span><br>Home</a>
+        <a href="actors.html" class="nav-item active"><span>🎭</span><br>Actors</a>
+        <a href="podcasts.html" class="nav-item"><span>🎙️</span><br>Podcast</a>
+        <a href="admin.html" class="nav-item"><span>⚙️</span><br>Admin</a>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script>
+        // Copy firebase config yako hapa
+        const firebaseConfig = {
+            apiKey: "AIzaSyAlbRzPaXf4Tw_f9oFM39Ca4Un0GsyvFeI",
+            authDomain: "muul-lab.firebaseapp.com",
+            databaseURL: "https://muul-lab-default-rtdb.firebaseio.com",
+            projectId: "muul-lab",
+            storageBucket: "muul-lab.firebasestorage.app",
+            messagingSenderId: "289981524698",
+            appId: "1:289981524698:web:f58c296609ca0bd4d253e3"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Vuta Actors kutoka Firebase
+        database.ref('actors').on('value', (snapshot) => {
+            const actors = snapshot.val();
+            const grid = document.getElementById('actors-list');
+            grid.innerHTML = '';
+
+            for (let id in actors) {
+                const actor = actors[id];
+                grid.innerHTML += `
+                    <div class="actor-card">
+                        <img src="${actor.imageUrl}" class="actor-img" alt="${actor.name}">
+                        <div class="actor-info">
+                            <h3 class="actor-name">${actor.name}</h3>
+                            <p class="actor-role">${actor.role || 'Professional Actor'}</p>
+                            <div class="social-links">
+                                <a href="${actor.instagram}" target="_blank">IG</a>
+                                <a href="${actor.youtube}" target="_blank">YT</a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>
