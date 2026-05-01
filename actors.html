@@ -5,129 +5,92 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ACTORS | MUUH LAB</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
     <style>
-        body { background: #050505; color: white; font-family: 'Poppins', sans-serif; }
+        :root { --gold: #D4AF37; --dark: #050505; }
+        body { background: var(--dark); color: white; font-family: 'Poppins', sans-serif; margin: 0; padding: 20px; }
         
-        /* Hero Section ya Kinyama */
-        .actors-hero {
-            height: 40vh;
-            background: linear-gradient(rgba(0,0,0,0.7), #050505), url('https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&q=80&w=1000');
-            background-size: cover;
-            background-position: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
+        header { text-align: center; margin-bottom: 40px; padding-top: 20px; }
+        h1 { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 2.5rem; margin: 0; }
+        p.subtitle { color: #888; font-size: 0.9rem; letter-spacing: 2px; }
+
+        /* SEARCH BAR */
+        .search-container { max-width: 500px; margin: 0 auto 30px auto; }
+        #actorSearch { 
+            width: 100%; padding: 12px 20px; border-radius: 30px; border: 1px solid #222; 
+            background: #111; color: white; outline: none; transition: 0.3s;
+        }
+        #actorSearch:focus { border-color: var(--gold); box-shadow: 0 0 10px rgba(212, 175, 55, 0.2); }
+
+        /* GRID SYSTEM */
+        .actors-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); 
+            gap: 20px; max-width: 1000px; margin: auto; 
         }
 
-        .actors-hero h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 3rem;
-            color: #D4AF37;
-            text-transform: uppercase;
-            letter-spacing: 5px;
-        }
-
-        /* Talent Grid */
-        .actors-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 25px;
-            padding: 40px 5%;
-        }
-
-        .actor-card {
-            background: #111;
-            border-radius: 15px;
-            overflow: hidden;
-            border: 1px solid #222;
-            transition: 0.4s;
+        /* ACTOR CARD */
+        .actor-card { 
+            background: #111; border-radius: 15px; overflow: hidden; 
+            transition: 0.4s; cursor: pointer; border: 1px solid #1a1a1a;
             position: relative;
         }
+        .actor-card:hover { transform: translateY(-10px); border-color: var(--gold); }
+        
+        .actor-img { width: 100%; height: 240px; object-fit: cover; transition: 0.5s; }
+        .actor-card:hover .actor-img { filter: brightness(0.7) scale(1.1); }
 
-        .actor-card:hover {
-            transform: translateY(-10px);
-            border-color: #D4AF37;
-            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.2);
-        }
+        .actor-info { padding: 15px; text-align: center; }
+        .actor-name { margin: 0; font-size: 1rem; color: #fff; font-weight: 600; }
+        .actor-role { margin: 5px 0; font-size: 0.75rem; color: var(--gold); text-transform: uppercase; letter-spacing: 1px; }
+        .actor-nick { font-size: 0.8rem; color: #666; font-style: italic; }
 
-        .actor-img {
-            width: 100%;
-            height: 280px;
-            object-fit: cover;
-            filter: grayscale(30%);
-            transition: 0.4s;
-        }
+        /* LOADING SPINNER */
+        #loading { text-align: center; padding: 50px; color: var(--gold); }
 
-        .actor-card:hover .actor-img { filter: grayscale(0%); }
-
-        .actor-info {
-            padding: 15px;
-            text-align: center;
-            background: linear-gradient(transparent, #000);
-        }
-
-        .actor-name {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.2rem;
-            color: #D4AF37;
-            margin-bottom: 5px;
-        }
-
-        .actor-role { font-size: 0.8rem; color: #888; text-transform: uppercase; }
-
-        .social-links {
-            margin-top: 10px;
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-        }
-
-        .social-links a { color: #D4AF37; text-decoration: none; font-size: 1.2rem; }
-
-        /* Bottom Nav baki nayo ile ile */
-        .bottom-nav {
-            position: fixed; bottom: 0; left: 0; width: 100%;
-            background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
-            display: flex; justify-content: space-around; padding: 12px 0;
-            border-top: 1px solid #1a1a1a; z-index: 1000;
-        }
-        .nav-item { color: #888; text-decoration: none; font-size: 10px; text-align: center; }
-        .nav-item.active { color: #D4AF37; }
+        /* BOTTOM NAV (Kama unayo kwenye Index) */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(0,0,0,0.9); display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #222; z-index: 100; }
+        .nav-item { color: #888; text-decoration: none; font-size: 12px; }
+        .nav-item.active { color: var(--gold); }
     </style>
 </head>
 <body>
 
-    <header class="actors-hero">
-        <h1>The Talents</h1>
-        <p>Faces of MUUH SCRIPT & FILM LAB</p>
+    <header>
+        <h1>MUUH TALENTS</h1>
+        <p class="subtitle">THE FACES OF MUUH SCRIPT & FILM LAB</p>
     </header>
 
-    <main>
-        <div class="actors-grid" id="actors-list">
-            <div class="actor-card">
-                <img src="https://via.placeholder.com/300x400" class="actor-img" alt="Actor">
-                <div class="actor-info">
-                    <h3 class="actor-name">Loading...</h3>
-                    <p class="actor-role">MUUH Talent</p>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <div class="bottom-nav">
-        <a href="index.html" class="nav-item"><span>🏠</span><br>Home</a>
-        <a href="actors.html" class="nav-item active"><span>🎭</span><br>Actors</a>
-        <a href="podcasts.html" class="nav-item"><span>🎙️</span><br>Podcast</a>
-        <a href="admin.html" class="nav-item"><span>⚙️</span><br>Admin</a>
+    <div class="search-container">
+        <input type="text" id="actorSearch" placeholder="Tafuta msanii..." onkeyup="filterActors()">
     </div>
+
+    <div id="loading">Inapakia Wasanii...</div>
+    <div class="actors-grid" id="actors-grid"></div>
+
+ <nav class="bottom-nav">
+    <a href="index.html" class="nav-item">
+        <span>🏠</span>
+        <p>Home</p>
+    </a>
+    <a href="actors.html" class="nav-item">
+        <span>🎭</span>
+        <p>Actors</p>
+    </a>
+    <a href="podcasts.html" class="nav-item">
+        <span>🎙️</span>
+        <p>Podcasts</p>
+    </a>
+    <a href="admin.html" class="nav-item">
+        <span>⚙️</span>
+        <p>Admin</p>
+    </a>
+</nav>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
     <script>
-        // Copy firebase config yako hapa
+        // CONFIG YAKO YA FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyAlbRzPaXf4Tw_f9oFM39Ca4Un0GsyvFeI",
             authDomain: "muul-lab.firebaseapp.com",
@@ -140,29 +103,56 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // Vuta Actors kutoka Firebase
-        database.ref('actors').on('value', (snapshot) => {
-            const actors = snapshot.val();
-            const grid = document.getElementById('actors-list');
-            grid.innerHTML = '';
+        const grid = document.getElementById('actors-grid');
+        const loading = document.getElementById('loading');
 
-            for (let id in actors) {
-                const actor = actors[id];
-                grid.innerHTML += `
-                    <div class="actor-card">
-                        <img src="${actor.imageUrl}" class="actor-img" alt="${actor.name}">
-                        <div class="actor-info">
-                            <h3 class="actor-name">${actor.name}</h3>
-                            <p class="actor-role">${actor.role || 'Professional Actor'}</p>
-                            <div class="social-links">
-                                <a href="${actor.instagram}" target="_blank">IG</a>
-                                <a href="${actor.youtube}" target="_blank">YT</a>
+        // VUTA DATA KUTOKA FIREBASE
+        database.ref('actors').on('value', (snapshot) => {
+            loading.style.display = 'none';
+            grid.innerHTML = "";
+            
+            if (snapshot.exists()) {
+                snapshot.forEach((child) => {
+                    const id = child.key;
+                    const actor = child.val();
+                    
+                    // Fallback kwa data zinazoweza kukosa (kuzuia undefined)
+                    const name = actor.name || "Anonymous";
+                    const role = actor.role || "Talent";
+                    const nick = actor.nickname || "";
+                    const img = actor.imageUrl || "https://via.placeholder.com/300x400?text=MUUH+LAB";
+
+                    grid.innerHTML += `
+                        <div class="actor-card" onclick="location.href='profile.html?id=${id}'">
+                            <img src="${img}" class="actor-img" alt="${name}">
+                            <div class="actor-info">
+                                <h3 class="actor-name">${name}</h3>
+                                <p class="actor-role">${role}</p>
+                                <span class="actor-nick">${nick ? '"' + nick + '"' : ''}</span>
                             </div>
                         </div>
-                    </div>
-                `;
+                    `;
+                });
+            } else {
+                grid.innerHTML = "<p style='grid-column: 1/-1; text-align:center; color:#666;'>Bado hakuna wasanii waliosajiliwa.</p>";
             }
         });
+
+        // SEARCH FUNCTION
+        function filterActors() {
+            let input = document.getElementById('actorSearch').value.toLowerCase();
+            let cards = document.getElementsByClassName('actor-card');
+            
+            for (let i = 0; i < cards.length; i++) {
+                let name = cards[i].querySelector('.actor-name').innerText.toLowerCase();
+                let nick = cards[i].querySelector('.actor-nick').innerText.toLowerCase();
+                if (name.includes(input) || nick.includes(input)) {
+                    cards[i].style.display = "";
+                } else {
+                    cards[i].style.display = "none";
+                }
+            }
+        }
     </script>
 </body>
 </html>

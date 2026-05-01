@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARTIST PROFILE | MUUH LAB</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --gold: #D4AF37; --dark: #050505; --green: #25D366; }
+        body { background: var(--dark); color: white; font-family: 'Poppins', sans-serif; margin: 0; padding-bottom: 100px; }
+        
+        /* HEADER */
+        .header { height: 350px; position: relative; overflow: hidden; border-bottom: 2px solid #111; }
+        #profile-img { width: 100%; height: 100%; object-fit: cover; }
+        .gradient-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, transparent 40%, rgba(5,5,5,1) 95%); }
+        .info-overlay { position: absolute; bottom: 20px; left: 20px; right: 20px; }
+        .name { font-size: 2.2rem; font-family: 'Playfair Display', serif; color: var(--gold); margin: 0; line-height: 1; }
+        .nick { font-style: italic; color: #aaa; font-size: 1rem; }
+
+        /* CONTENT */
+        .content-section { padding: 20px; }
+        h3 { border-left: 4px solid var(--gold); padding-left: 10px; font-size: 1.1rem; margin-bottom: 20px; }
+        .tiktok-container { border-radius: 15px; overflow: hidden; background: #000; min-height: 500px; margin-top: 10px; }
+
+        /* FIXED BUTTONS CHINI */
+        .action-btns { 
+            position: fixed; 
+            bottom: 0; 
+            left: 0; 
+            width: 100%; 
+            display: flex; 
+            z-index: 1000; 
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.5);
+        }
+        .btn { 
+            flex: 1; 
+            padding: 20px; 
+            text-align: center; 
+            text-decoration: none; 
+            font-weight: 600; 
+            font-size: 0.9rem; 
+            border: none; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            gap: 8px;
+        }
+        .wa-btn { background: var(--green); color: white; }
+        .rate-btn { background: var(--gold); color: black; }
+
+        /* RATING MODAL/UI */
+        #rating-ui {
+            display: none; 
+            position: fixed; 
+            bottom: 85px; 
+            left: 5%; 
+            width: 90%; 
+            background: #151515; 
+            border: 1px solid var(--gold); 
+            border-radius: 15px; 
+            padding: 20px; 
+            text-align: center; 
+            z-index: 1001;
+            box-sizing: border-box;
+        }
+        .stars { font-size: 2rem; margin: 15px 0; display: flex; justify-content: center; gap: 5px; }
+        .star { cursor: pointer; color: #333; transition: 0.3s; }
+        .star.active { color: var(--gold); text-shadow: 0 0 10px var(--gold); }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+       <img id="profile-img" src="https://via.placeholder.com/400x600?text=MUUH+LAB" alt="Artist">
+        <div class="gradient-overlay"></div>
+        <div class="info-overlay">
+            <h1 id="artist-name" class="name">Loading...</h1>
+            <span id="artist-nick" class="nick"></span>
+        </div>
+    </div>
+
+    <div class="content-section">
+        <h3>TikTok Updates</h3>
+        <div id="tiktok-feed" class="tiktok-container">
+            </div>
+    </div>
+
+    <div id="rating-ui">
+        <p style="margin:0; font-weight: 600;">Unamkubali vipi ${name}?</p>
+        <div class="stars">
+            <span class="star" onclick="setRating(1)">★</span>
+            <span class="star" onclick="setRating(2)">★</span>
+            <span class="star" onclick="setRating(3)">★</span>
+            <span class="star" onclick="setRating(4)">★</span>
+            <span class="star" onclick="setRating(5)">★</span>
+        </div>
+        <button onclick="submitRate()" style="width:100%; background:var(--gold); border:none; padding:12px; border-radius:8px; font-weight:bold;">TUMA RATING</button>
+        <p onclick="closeRating()" style="margin-top:10px; font-size: 0.8rem; color:#888; cursor:pointer;">Funga</p>
+    </div>
+
+    <div class="action-btns">
+        <a id="wa-link" href="#" class="btn wa-btn">
+            <span>💬</span> WHATSAPP
+        </a>
+        <button onclick="toggleRating()" class="btn rate-btn">
+            <span>⭐</span> RATE ARTIST
+        </button>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAlbRzPaXf4Tw_f9oFM39Ca4Un0GsyvFeI",
+            authDomain: "muul-lab.firebaseapp.com",
+            databaseURL: "https://muul-lab-default-rtdb.firebaseio.com",
+            projectId: "muul-lab",
+            storageBucket: "muul-lab.firebasestorage.app",
+            messagingSenderId: "289981524698",
+            appId: "1:289981524698:web:f58c296609ca0bd4d253e3"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const artistId = urlParams.get('id');
+        let currentRating = 0;
+
+        if (artistId) {
+            database.ref('actors/' + artistId).once('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    document.getElementById('artist-name').innerText = data.name;
+                    document.getElementById('artist-nick').innerText = '"' + data.nickname + '"';
+                    document.getElementById('profile-img').src = data.imageUrl;
+                    
+                    // WhatsApp
+                    const phone = data.phone || "255700000000"; 
+                    document.getElementById('wa-link').href = `https://wa.me/${phone}?text=Habari ${data.name}, nimekuona kupitia MUUH LAB!`;
+
+                    // TikTok
+                    const tiktokDiv = document.getElementById('tiktok-feed');
+                   // Hakikisha username haina @ unapo-upload kule Admin
+const tiktokUser = data.username.replace('@', ''); // Hii inasafisha kama uliweka @ kwa bahati mbaya
+
+tiktokDiv.innerHTML = `
+    <blockquote class="tiktok-embed" 
+        cite="https://www.tiktok.com/@${tiktokUser}" 
+        data-unique-id="${tiktokUser}" 
+        style="max-width: 605px; min-width: 325px;">
+        <section>
+            <a target="_blank" href="https://www.tiktok.com/@${tiktokUser}?refer=embed">@${tiktokUser}</a>
+        </section>
+    </blockquote>
+`;
+
+// Muhimu: Pakia script ya TikTok baada ya kuandika HTML
+const script = document.createElement('script');
+script.src = "https://www.tiktok.com/embed.js";
+script.async = true;
+document.body.appendChild(script);
+        // RATING LOGIC
+        function toggleRating() { document.getElementById('rating-ui').style.display = 'block'; }
+        function closeRating() { document.getElementById('rating-ui').style.display = 'none'; }
+        
+        function setRating(n) {
+            currentRating = n;
+            const stars = document.querySelectorAll('.star');
+            stars.forEach((s, index) => {
+                s.classList.toggle('active', index < n);
+            });
+        }
+
+        function submitRate() {
+            if(currentRating === 0) return alert("Gusa nyota kwanza!");
+            // Hapa unaweza kusave rating Firebase ukipenda, kwa sasa tunaweka alert
+            alert("Asante! Umeipa " + currentRating + " Stars.");
+            closeRating();
+        }
+    </script>
+</body>
+</html>

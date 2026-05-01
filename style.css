@@ -9,7 +9,7 @@ html {
     scroll-behavior: smooth; /* Inafanya page isogee kinyama */
 }
 .search-box-hero {
-    margin-bottom: 25px;
+    margin-bottom:25px;
     width: 100%;
     display: flex;
     justify-content: center;
@@ -356,7 +356,53 @@ body {
 .nav-links a:hover, .nav-links a.active {
     color: var(--gold);
 }
+/* BOTTOM NAV YA KISHUA */
+.bottom-nav { 
+    position: fixed; 
+    bottom: 0; 
+    left: 0; 
+    width: 100%; 
+    background: rgba(10, 10, 10, 0.95); /* Weusi mzito wenye transparency kidogo */
+    backdrop-filter: blur(10px); /* Inaleta vibe la glass/kioo */
+    display: flex; 
+    justify-content: space-around; 
+    align-items: center;
+    padding: 12px 0 25px 0; /* Padding ya chini ni kubwa zaidi kwa ajili ya simu mpya */
+    border-top: 1px solid #222; 
+    z-index: 9999; 
+}
 
+.nav-item { 
+    color: #777; 
+    text-decoration: none; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    gap: 5px; /* Nafasi kati ya icon na maandishi */
+    transition: 0.3s;
+    flex: 1; /* Inafanya kila button ichukue nafasi sawa */
+}
+
+/* Icon ziwe kubwa kidogo */
+.nav-item i, .nav-item span {
+    font-size: 1.4rem; 
+}
+
+/* Maandishi ya chini ya icon */
+.nav-item p {
+    margin: 0;
+    font-size: 0.7rem;
+    font-weight: 500;
+}
+
+/* Button iliyochaguliwa (Active) iwe na rangi ya Dhahabu */
+.nav-item.active { 
+    color: var(--gold); 
+}
+
+.nav-item.active i, .nav-item.active span {
+    transform: translateY(-3px); /* Inajinyanyua kidogo juu */
+}
 /* 3. Hero Section (Hapa ndio ngoma ilipo) */
 .hero {
     height: 85vh;

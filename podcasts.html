@@ -114,13 +114,24 @@
         </div>
     </main>
 
-    <div class="bottom-nav">
-        <a href="index.html" class="nav-item"><span>🏠</span><br>Home</a>
-        <a href="actors.html" class="nav-item"><span>🎭</span><br>Actors</a>
-        <a href="podcasts.html" class="nav-item active"><span>🎙️</span><br>Podcast</a>
-        <a href="javascript:void(0)" onclick="checkAdmin()" class="nav-item"><span>⚙️</span><br>Admin</a>
-    </div>
-
+  <nav class="bottom-nav">
+    <a href="index.html" class="nav-item">
+        <span>🏠</span>
+        <p>Home</p>
+    </a>
+    <a href="actors.html" class="nav-item">
+        <span>🎭</span>
+        <p>Actors</p>
+    </a>
+    <a href="podcasts.html" class="nav-item">
+        <span>🎙️</span>
+        <p>Podcasts</p>
+    </a>
+    <a href="admin.html" class="nav-item">
+        <span>⚙️</span>
+        <p>Admin</p>
+    </a>
+</nav>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script>
@@ -168,6 +179,12 @@
                 `;
             }
         });
+        <div id="manage" class="tab-content">
+    <h3>Dhibiti Content Zako</h3>
+    <div id="manage-list" style="display: grid; gap: 15px;">
+        <p style="color:#888;">Inapakia data...</p>
+    </div>
+</div>
     </script>
 </body>
 </html>
