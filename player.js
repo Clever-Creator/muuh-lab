@@ -28,7 +28,24 @@ window.onload = () => {
         alert("Video ID haijapatikana!");
     }
 };
+// Hii function itabadilisha link ya kawaida kuwa ya embed
+function getEmbedUrl(url) {
+    let videoId = '';
+    if (url.includes('v=')) {
+        videoId = url.split('v=')[1].split('&')[0];
+    } else if (url.includes('youtu.be/')) {
+        videoId = url.split('youtu.be/')[1].split('?')[0];
+    } else if (url.includes('embed/')) {
+        return url; // Tayari ipo sawa
+    }
+    return `https://www.youtube.com/embed/${videoId}`;
+}
 
+// Sasa, unapochukua data kutoka Firestore na kuiweka kwenye iframe:
+const videoUrl = data.youtubeUrl; // Link kutoka Database
+const playerIframe = document.getElementById('video-player'); // Hakikisha iframe yako ina ID hii
+
+playerIframe.src = getEmbedUrl(videoUrl);
 function loadVideoData(id) {
     // Tunatumia .on ili namba ikibadilika kule Firebase, na huku ibadilike papo hapo
     database.ref('movies/' + id).on('value', (snapshot) => {
