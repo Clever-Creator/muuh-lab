@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MUUH CINEMA | Inacheza...</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --gold: #D4AF37; --dark: #050505; }
+        body { background: var(--dark); color: white; font-family: 'Poppins', sans-serif; margin: 0; padding-bottom: 50px; }
+        
+        .nav { padding: 20px; display: flex; align-items: center; gap: 15px; }
+        .back-btn { color: var(--gold); text-decoration: none; font-size: 0.9rem; }
+
+        /* Video Container */
+        .video-container { width: 100%; aspect-ratio: 16/9; background: #000; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        iframe { width: 100%; height: 100%; border: none; }
+/* Container ya Video */
+.video-container { 
+    width: 100%; 
+    background: #000; 
+    transition: all 0.5s ease;
+    margin: 0 auto;
+}
+
+/* Horizontal (Movies/Series) - Standard 16:9 */
+.video-container.horizontal {
+    aspect-ratio: 16/9;
+}
+
+/* Vertical (Shorts) - TikTok Style 9:16 */
+.video-container.vertical {
+    width: 100%;
+    max-width: 400px; /* Inazuia isipate upana wa TV kwenye kioo kikubwa */
+    aspect-ratio: 9/16;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+iframe { width: 100%; height: 100%; border: none; }
+        .video-info { padding: 20px; }
+        h1 { font-size: 1.4rem; margin: 0 0 10px 0; color: white; }
+        .meta { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222; padding-bottom: 15px; margin-bottom: 20px; }
+        .views { color: var(--gold); font-size: 0.85rem; font-weight: 600; }
+
+        /* Comment Section */
+        .comments-section { padding: 0 20px; }
+        h3 { font-size: 1rem; color: #888; margin-bottom: 15px; }
+        .comment-input { width: 100%; background: #111; border: 1px solid #333; padding: 12px; border-radius: 10px; color: white; margin-bottom: 10px; box-sizing: border-box; }
+        .post-btn { background: var(--gold); color: black; border: none; padding: 10px 25px; border-radius: 5px; font-weight: 600; cursor: pointer; float: right; }
+        
+        .comment-list { margin-top: 50px; clear: both; }
+        .comment-item { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 10px; margin-bottom: 10px; border-left: 3px solid var(--gold); }
+        .comment-item b { font-size: 0.85rem; color: var(--gold); display: block; margin-bottom: 4px; }
+        .comment-item p { margin: 0; font-size: 0.9rem; color: #ccc; }
+    </style>
+</head>
+<body>
+
+    <div class="nav">
+        <a href="index.html" class="back-btn">← MUUH LAB</a>
+    </div>
+
+    <div class="video-container" id="player">
+        </div>
+
+    <div class="video-info">
+    <h1 id="v-title">Inapakia...</h1>
+    <div class="meta" style="display:flex; justify-content:space-between; align-items:center;">
+        <span class="views" id="v-views">👁️ 0 Views</span>
+        
+        <div class="interaction-btns" style="display:flex; gap:15px; align-items:center;">
+            <button onclick="likeVideo()" id="like-btn" style="background:none; border:none; color:#888; font-size:1.1rem; cursor:pointer; display:flex; align-items:center; gap:5px; transition:0.3s;">
+                <span id="like-icon">❤️</span> 
+                <span id="v-likes" style="font-size:0.9rem; font-weight:600;">0</span>
+            </button>
+            
+            <button onclick="shareVideo()" style="background:none; border:none; color:var(--gold); font-size:1.1rem; cursor:pointer;">
+                <span>🔗 SHARE</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+    <div class="comments-section">
+        <h3>MAONI YA MASHABIKI</h3>
+        <input type="text" id="c-name" class="comment-input" placeholder="Jina lako">
+        <textarea id="c-text" class="comment-input" rows="2" placeholder="Andika maoni yako hapa..."></textarea>
+        <button class="post-btn" onclick="postComment()">POST COMMENT</button>
+<div class="related-section" style="padding: 20px; border-top: 1px solid #222; margin-top: 30px;">
+    <h3 style="color: var(--gold); font-size: 0.9rem; margin-bottom: 20px; letter-spacing: 1px;">SADIKI HIZI PIA (RELATED)</h3>
+    <div id="related-grid" style="display: flex; flex-direction: column; gap: 15px;">
+        </div>
+</div>
+        <div class="comment-list" id="comments">
+            </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <script>
+        // 1. Firebase Config (Iweke ile yako hapa)
+const firebaseConfig = {
+    apiKey: "AIzaSyAlbRzPaXf4Tw_f9oFM39Ca4Un0GsyvFeI",
+    authDomain: "muul-lab.firebaseapp.com",
+    databaseURL: "https://muul-lab-default-rtdb.firebaseio.com",
+    projectId: "muul-lab",
+    storageBucket: "muul-lab.firebasestorage.app",
+    messagingSenderId: "289981524698",
+    appId: "1:289981524698:web:f58c296609ca0bd4d253e3"
+};
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+
+const urlParams = new URLSearchParams(window.location.search);
+const videoId = urlParams.get('v');
+
+if (videoId) {
+    loadVideo();
+    loadComments();
+    loadRelatedVideos();
+    incrementViews();
+} else {
+    window.location.href = 'index.html';
+}
+
+// --- FUNCTION YA KUCHEZA VIDEO NA KUSOMA LIKES ---
+function loadVideo() {
+    database.ref('videos/' + videoId).on('value', (snap) => {
+        const data = snap.val();
+        if (data) {
+            document.getElementById('v-title').innerText = data.title;
+            document.getElementById('v-views').innerText = `👁️ ${data.views || 0} Views`;
+            document.getElementById('v-likes').innerText = data.likes || 0;
+
+            const playerContainer = document.getElementById('player');
+            let rawUrl = data.link; 
+            let vId = "";
+
+            // Safisha Link ya YouTube
+            if (rawUrl.includes("v=")) {
+                vId = rawUrl.split("v=")[1].split("&")[0];
+            } else if (rawUrl.includes("youtu.be/")) {
+                vId = rawUrl.split("youtu.be/")[1].split("?")[0];
+            } else if (rawUrl.includes("shorts/")) {
+                vId = rawUrl.split("shorts/")[1].split("?")[0];
+            }
+
+            // Amua Size (Vertical vs Horizontal)
+            if (data.category === 'shorts') {
+                playerContainer.className = "video-container vertical";
+            } else {
+                playerContainer.className = "video-container horizontal";
+            }
+
+            if (vId !== "") {
+                const embedUrl = `https://www.youtube.com/embed/${vId}?autoplay=1&rel=0`;
+                playerContainer.innerHTML = `
+                    <iframe src="${embedUrl}" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+            }
+
+            // Angalia kama mteja ashalike awali
+            if (localStorage.getItem('liked_' + videoId)) {
+                document.getElementById('like-btn').classList.add('liked');
+            }
+        }
+    });
+}
+
+// --- FUNCTION YA LIKE ---
+function likeVideo() {
+    if (localStorage.getItem('liked_' + videoId)) {
+        alert("Tayari umeipenda video hii! ❤️");
+        return;
+    }
+
+    database.ref('videos/' + videoId + '/likes').transaction((current) => {
+        return (current || 0) + 1;
+    }).then(() => {
+        localStorage.setItem('liked_' + videoId, true);
+        document.getElementById('like-btn').classList.add('liked');
+    });
+}
+
+// --- FUNCTION YA SHARE ---
+function shareVideo() {
+    const title = document.getElementById('v-title').innerText;
+    const currentUrl = window.location.href;
+    const message = `Check out this content on MUUH LAB: ${title}. Watch here: ${currentUrl}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
+}
+
+// --- MAONI (COMMENTS) ---
+function postComment() {
+    const name = document.getElementById('c-name').value;
+    const text = document.getElementById('c-text').value;
+    if(!name || !text) return alert("Jaza jina na maoni!");
+
+    database.ref('comments/' + videoId).push({
+        name: name,
+        comment: text,
+        time: Date.now()
+    }).then(() => {
+        document.getElementById('c-text').value = "";
+    });
+}
+
+function loadComments() {
+    database.ref('comments/' + videoId).on('value', (snap) => {
+        const list = document.getElementById('comments');
+        list.innerHTML = "";
+        snap.forEach(child => {
+            const c = child.val();
+            list.innerHTML += `<div class="comment-item"><b>${c.name}</b><p>${c.comment}</p></div>`;
+        });
+    });
+}
+
+function incrementViews() {
+    database.ref('videos/' + videoId + '/views').transaction(c => (c || 0) + 1);
+}
+
+function loadRelatedVideos() {
+    database.ref('videos').limitToLast(6).once('value', (snap) => {
+        const grid = document.getElementById('related-grid');
+        grid.innerHTML = "";
+        snap.forEach(child => {
+            if (child.key !== videoId) {
+                const v = child.val();
+                grid.innerHTML += `
+                    <div onclick="window.location.href='watch.html?v=${child.key}'" style="display:flex; gap:10px; cursor:pointer; margin-bottom:10px;">
+                        <img src="${v.thumb || v.poster}" style="width:100px; height:60px; border-radius:8px; object-fit:cover;">
+                        <h4 style="font-size:0.8rem; color:white;">${v.title}</h4>
+                    </div>`;
+            }
+        });
+    });
+}
+    </script>
+</body>
+</html>

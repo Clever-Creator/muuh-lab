@@ -12,44 +12,39 @@
         h1 { color: var(--gold); text-align: center; font-size: 1.5rem; margin-bottom: 30px; }
 
         /* TAB SYSTEM */
-        /* TAB SYSTEM YENYE SLIDE */
-.tabs { 
-    display: flex; 
-    gap: 12px; 
-    margin-bottom: 30px; 
-    overflow-x: auto; /* Hii inaruhusu kuslide */
-    padding: 10px 5px;
-    scrollbar-width: none; /* Inaficha scrollbar kwenye Firefox */
-    -ms-overflow-style: none; /* Inaficha scrollbar kwenye IE/Edge */
-    scroll-behavior: smooth;
-    border-bottom: 1px solid #222;
-}
+        .tabs { 
+            display: flex; 
+            gap: 12px; 
+            margin-bottom: 30px; 
+            overflow-x: auto; 
+            padding: 10px 5px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            scroll-behavior: smooth;
+            border-bottom: 1px solid #222;
+        }
+        .tabs::-webkit-scrollbar { display: none; }
 
-/* Inaficha scrollbar kwenye Chrome na Safari ili iwe safi */
-.tabs::-webkit-scrollbar {
-    display: none;
-}
+        .tab-btn { 
+            background: #1a1a1a; 
+            color: #888; 
+            border: 1px solid #333; 
+            padding: 12px 25px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            white-space: nowrap;
+            font-size: 0.9rem;
+            transition: 0.3s;
+            flex-shrink: 0;
+        }
 
-.tab-btn { 
-    background: #1a1a1a; 
-    color: #888; 
-    border: 1px solid #333; 
-    padding: 12px 25px; 
-    border-radius: 8px; 
-    cursor: pointer; 
-    white-space: nowrap; /* Hii inazuia maneno yasishuke chini */
-    font-size: 0.9rem;
-    transition: 0.3s;
-    flex-shrink: 0; /* Inazuia button zisinywele ili ziweze kuslide */
-}
-
-.tab-btn.active { 
-    background: var(--gold); 
-    color: black; 
-    font-weight: 600; 
-    border-color: var(--gold);
-    box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
-}
+        .tab-btn.active { 
+            background: var(--gold); 
+            color: black; 
+            font-weight: 600; 
+            border-color: var(--gold);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+        }
         .tab-content { display: none; background: #151515; padding: 20px; border-radius: 10px; border: 1px solid #222; }
         .tab-content.active { display: block; }
 
@@ -57,6 +52,7 @@
         .form-group { margin-bottom: 15px; }
         label { display: block; font-size: 0.8rem; color: #aaa; margin-bottom: 5px; }
         input, select, textarea { width: 100%; padding: 12px; border-radius: 5px; border: 1px solid #333; background: #000; color: white; box-sizing: border-box; }
+        input:focus, textarea:focus { border-color: var(--gold); outline: none; }
         .submit-btn { width: 100%; padding: 15px; background: var(--gold); border: none; border-radius: 5px; color: black; font-weight: 600; cursor: pointer; margin-top: 10px; }
         
         .manage-item { background:#222; padding:15px; border-radius:8px; display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-left: 4px solid var(--gold); }
@@ -65,15 +61,30 @@
     </style>
 </head>
 <body>
+<div id="admin-login" style="position:fixed; top:0; left:0; width:100%; height:100%; background:var(--dark); z-index:9999; display:flex; justify-content:center; align-items:center; flex-direction:column;">
+    <h2 style="color:var(--gold);">MUUH LAB ACCESS</h2>
+    <input type="password" id="admin-pass" placeholder="Ingiza Password" style="width:250px; margin-bottom:15px; text-align:center;">
+    <button class="submit-btn" style="width:250px;" onclick="checkPass()">ENTER DASHBOARD</button>
+</div>
 
+<script>
+    function checkPass() {
+        const pass = document.getElementById('admin-pass').value;
+        if(pass === "Goblin") { // Hapa ndio password yako, unaweza kuibadilisha
+            document.getElementById('admin-login').style.display = 'none';
+        } else {
+            alert("Password Sio Sahihi! Jaribu tena.");
+        }
+    }
+</script>
 <div class="admin-container">
     <h1>MUUH LAB CONTROL CENTER</h1>
 
     <div class="tabs">
-        <button class="tab-btn active" onclick="openTab('movies')">🎬 Content</button>
-        <button class="tab-btn" onclick="openTab('actors')">🎭 Actors</button>
-        <button class="tab-btn" onclick="openTab('podcasts')">🎙️ Podcasts</button>
-        <button class="tab-btn" onclick="openTab('manage')">⚙️ Manage</button>
+        <button class="tab-btn active" onclick="openTab(event, 'movies')">🎬 Content</button>
+        <button class="tab-btn" onclick="openTab(event, 'actors')">🎭 Actors</button>
+        <button class="tab-btn" onclick="openTab(event, 'podcasts')">🎙️ Podcasts</button>
+        <button class="tab-btn" onclick="openTab(event, 'manage')">⚙️ Manage</button>
     </div>
 
     <div id="movies" class="tab-content active">
@@ -88,12 +99,18 @@
     <div id="actors" class="tab-content">
         <h3>Sajili Msanii</h3>
         <div class="form-group"><label>Full Name</label><input type="text" id="aName"></div>
-        <div class="form-group"><label>Nickname</label><input type="text" id="aNick"></div>
+        <div class="form-group"><label>Nickname (Mf: Goblin)</label><input type="text" id="aNick"></div>
         <div class="form-group"><label>TikTok Username (Bila @)</label><input type="text" id="aUser"></div>
         <div class="form-group"><label>WhatsApp Number (Mf: 255767...)</label><input type="text" id="aPhone"></div>
-        <div class="form-group"><label>Image URL</label><input type="text" id="aImage"></div>
-        <div class="form-group"><label>Role</label><input type="text" id="aRole"></div>
-        <button class="submit-btn" onclick="uploadActor()">SAJILI MSANII</button>
+        <div class="form-group"><label>Profile Image URL</label><input type="text" id="aImage"></div>
+        <div class="form-group"><label>Role (Mf: Director, Actor n.k)</label><input type="text" id="aRole"></div>
+        
+        <div class="form-group">
+            <label>Latest Works (Weka Link za picha, zitenganishe kwa koma , )</label>
+            <textarea id="aWorks" rows="3" placeholder="Link1, Link2, Link3..."></textarea>
+        </div>
+        
+        <button class="submit-btn" onclick="uploadActor()">SAJILI MSANII KIKAMILIFU</button>
     </div>
 
     <div id="podcasts" class="tab-content">
@@ -130,24 +147,40 @@
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
-    function openTab(tabId) {
+    function openTab(evt, tabId) {
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(tabId).classList.add('active');
-        event.currentTarget.classList.add('active');
+        evt.currentTarget.classList.add('active');
         if(tabId === 'manage') loadManageList();
     }
 
+    // UPLOAD ACTOR (IMEBORESHWA KWA LATEST WORKS)
     function uploadActor() {
+        const worksInput = document.getElementById('aWorks').value;
+        // Tenganisha link kwa koma na tengeneza Array
+        const worksArray = worksInput ? worksInput.split(',').map(link => link.trim()) : [];
+
         const data = {
             name: document.getElementById('aName').value,
             nickname: document.getElementById('aNick').value,
             username: document.getElementById('aUser').value,
             phone: document.getElementById('aPhone').value,
             imageUrl: document.getElementById('aImage').value,
-            role: document.getElementById('aRole').value
+            role: document.getElementById('aRole').value,
+            works: worksArray, // Hapa ndipo picha za kishua zinaingia
+            ratings: { total_points: 0, count: 0 }
         };
-        database.ref('actors').push(data).then(() => { alert('Safi! Msanii amesajiliwa.'); location.reload(); });
+
+        if(!data.name || !data.imageUrl) {
+            alert("Jina na Picha ya Profile ni lazima!");
+            return;
+        }
+
+        database.ref('actors').push(data).then(() => { 
+            alert('Safi! Msanii na kazi zake zimesajiliwa.'); 
+            location.reload(); 
+        });
     }
 
     function uploadContent() {
@@ -171,53 +204,75 @@
 
   function loadManageList() {
     const listDiv = document.getElementById('manage-list');
-    listDiv.innerHTML = '<p style="text-align:center; color:var(--gold);">Inapakia data...</p>';
+    listDiv.innerHTML = "<p style='color:var(--gold);'>Inapakia data za MUUH LAB...</p>";
 
     let htmlContent = "";
 
-    // Vuta Actors
-    database.ref('actors').once('value', (snap) => {
-        htmlContent += `<h4 style="color:var(--gold); margin-top:10px;">🎭 WASANII</h4>`;
-        if (snap.exists()) {
-            snap.forEach((child) => {
-                const val = child.val();
+    // 1. SOMA VIDEOS (Movies & Shorts)
+    database.ref('videos').once('value', (vSnap) => {
+        htmlContent += `<h4 style="color:var(--gold); border-bottom:1px solid #333; padding-bottom:5px;">🎬 VIDEOS (MOVIES & SHORTS)</h4>`;
+        if (vSnap.exists()) {
+            vSnap.forEach((vChild) => {
+                const v = vChild.val();
                 htmlContent += `
-                    <div class="manage-item">
-                        <span><b>${val.name || 'Bila Jina'}</b> (${val.nickname || 'No Nick'})</span>
-                        <button class="del-btn" onclick="deleteItem('actors', '${child.key}')">FUTA</button>
+                    <div class="manage-item" style="display:flex; justify-content:space-between; align-items:center; background:#111; padding:10px; margin-bottom:5px; border-radius:8px;">
+                        <span style="font-size:0.85rem;">${v.title} <br><small style="color:#666;">${v.category || 'video'}</small></span>
+                        <button class="del-btn" style="background:#ff4444; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;" onclick="deleteItem('videos', '${vChild.key}')">FUTA</button>
                     </div>`;
             });
         } else {
-            htmlContent += `<p style="font-size:12px; color:#666;">Hakuna wasanii.</p>`;
+            htmlContent += `<p style="font-size:12px; color:#555;">Hakuna video iliyosajiliwa.</p>`;
         }
 
-        // Vuta Videos
-        database.ref('videos').once('value', (vSnap) => {
-            htmlContent += `<h4 style="color:var(--gold); margin-top:20px;">🎬 VIDEOS</h4>`;
-            if (vSnap.exists()) {
-                vSnap.forEach((vChild) => {
-                    const vVal = vChild.val();
+        // 2. SOMA WASANII (ACTORS)
+        database.ref('actors').once('value', (aSnap) => {
+            htmlContent += `<h4 style="color:var(--gold); border-bottom:1px solid #333; padding-bottom:5px; margin-top:20px;">🎭 WASANII (ACTORS)</h4>`;
+            if (aSnap.exists()) {
+                aSnap.forEach((aChild) => {
+                    const a = aChild.val();
                     htmlContent += `
-                        <div class="manage-item">
-                            <span><b>${vVal.title || 'Video Title'}</b></span>
-                            <button class="del-btn" onclick="deleteItem('videos', '${vChild.key}')">FUTA</button>
+                        <div class="manage-item" style="display:flex; justify-content:space-between; align-items:center; background:#111; padding:10px; margin-bottom:5px; border-radius:8px;">
+                            <span style="font-size:0.85rem;">${a.name}</span>
+                            <button class="del-btn" style="background:#ff4444; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;" onclick="deleteItem('actors', '${aChild.key}')">FUTA</button>
                         </div>`;
                 });
             } else {
-                htmlContent += `<p style="font-size:12px; color:#666;">Hakuna video.</p>`;
+                htmlContent += `<p style="font-size:12px; color:#555;">Hakuna msanii aliyesajiliwa.</p>`;
             }
-            listDiv.innerHTML = htmlContent;
+
+            // 3. SOMA MAOMBI YA KAZI (BOOKINGS)
+            database.ref('bookings').once('value', (bSnap) => {
+                htmlContent += `<h4 style="color:var(--gold); border-bottom:1px solid #333; padding-bottom:5px; margin-top:20px;">💼 BOOKINGS (PRIVATE)</h4>`;
+                if (bSnap.exists()) {
+                    bSnap.forEach((bChild) => {
+                        const b = bChild.val();
+                        htmlContent += `
+                            <div class="manage-item" style="background:#111; padding:10px; margin-bottom:5px; border-radius:8px;">
+                                <p style="font-size:0.85rem; margin:0;"><b>Mteja:</b> ${b.clientName}</p>
+                                <p style="font-size:0.75rem; color:#888; margin:5px 0;"><b>Kazi:</b> ${b.jobDescription}</p>
+                                <button class="del-btn" style="background:#444; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer; width:100%;" onclick="deleteItem('bookings', '${bChild.key}')">ONDOA MAOMBI</button>
+                            </div>`;
+                    });
+                } else {
+                    htmlContent += `<p style="font-size:12px; color:#555;">Hakuna booking mpya.</p>`;
+                }
+
+                // WEKA KILA KITU KWENYE SCREEN
+                listDiv.innerHTML = htmlContent;
+            });
         });
     });
 }
-    function deleteItem(path, id) {
-        if(confirm("Je, una uhakika unataka kufuta hii? Ukifuta hairudi!")) {
-            database.ref(path + '/' + id).remove().then(() => { 
-                alert('Imefutwa kikamilifu!'); 
-                loadManageList(); // Refresh list hapo hapo
-            });
-        }
+
+// Function ya kufuta (Hakikisha unayo hii pia)
+function deleteItem(path, id) {
+    if (confirm("Je, una uhakika unataka kufuta hii?")) {
+        database.ref(path + '/' + id).remove().then(() => {
+            alert("Imefutwa! ✅");
+            loadManageList(); // Refresh list
+        });
     }
+}
 </script>
 </body>
 </html>

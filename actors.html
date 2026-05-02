@@ -54,17 +54,24 @@
     </style>
 </head>
 <body>
+   
 
+  
     <header>
         <h1>MUUH TALENTS</h1>
         <p class="subtitle">THE FACES OF MUUH SCRIPT & FILM LAB</p>
     </header>
-
+<div id="leaderboard" style="padding: 20px; background: linear-gradient(135deg, rgba(212,175,55,0.1), transparent); border-radius: 20px; margin-bottom: 30px; border: 1px solid rgba(212,175,55,0.2);">
+    <h3 style="color: var(--gold); font-size: 0.9rem; letter-spacing: 2px; text-align: center; margin-bottom: 20px;">🏆 TOP RATED TALENTS</h3>
+    <div id="top-three" style="display: flex; justify-content: center; align-items: flex-end; gap: 15px; padding-bottom: 10px;">
+        <p style="color: #666; font-size: 0.8rem;">Inatafuta mastaa...</p>
+    </div>
+</div>
     <div class="search-container">
         <input type="text" id="actorSearch" placeholder="Tafuta msanii..." onkeyup="filterActors()">
     </div>
 
-    <div id="loading">Inapakia Wasanii...</div>
+    <div id="loading">Searc Artist...</div>
     <div class="actors-grid" id="actors-grid"></div>
 
  <nav class="bottom-nav">
@@ -153,6 +160,59 @@
                 }
             }
         }
+        function loadLeaderboard() {
+    database.ref('actors').once('value', (snapshot) => {
+        if (snapshot.exists()) {
+            let actorsList = [];
+            snapshot.forEach((child) => {
+                const data = child.val();
+                const id = child.key;
+                
+                // Piga hesabu ya average rating
+                let avg = 0;
+                if (data.ratings && data.ratings.count > 0) {
+                    avg = data.ratings.total_points / data.ratings.count;
+                }
+                
+                actorsList.push({ 
+                    id, 
+                    name: data.name, 
+                    img: data.imageUrl, 
+                    score: avg.toFixed(1) 
+                });
+            });
+
+            // Panga: Kuanzia aliyepata kura nyingi zaidi
+            actorsList.sort((a, b) => b.score - a.score);
+
+            // Chukua Top 3 tu
+            const topThree = actorsList.slice(0, 3);
+            const container = document.getElementById('top-three');
+            container.innerHTML = '';
+
+            topThree.forEach((actor, index) => {
+                // Design ya washindi (Wa kwanza anakuwa mkubwa katikati)
+                const order = (index === 0) ? 2 : (index === 1) ? 1 : 3; 
+                const size = (index === 0) ? '90px' : '70px';
+                const crown = (index === 0) ? '👑' : '';
+
+                container.innerHTML += `
+                    <div style="text-align: center; order: ${order};">
+                        <div style="font-size: 1.2rem; margin-bottom: 5px;">${crown}</div>
+                        <a href="profile.html?id=${actor.id}" style="text-decoration:none;">
+                            <img src="${actor.img}" style="width: ${size}; height: ${size}; border-radius: 50%; border: 2px solid var(--gold); object-fit: cover; box-shadow: 0 0 15px rgba(212,175,55,0.3);">
+                            <p style="color: white; font-size: 0.7rem; margin-top: 8px; font-weight: 600;">${actor.name.split(' ')[0]}</p>
+                            <span style="color: var(--gold); font-size: 0.8rem;">⭐ ${actor.score}</span>
+                        </a>
+                    </div>
+                `;
+            });
+        }
+    });
+}
+
+// Iite hii function pale page inapo-load
+loadLeaderboard();
     </script>
 </body>
 </html>

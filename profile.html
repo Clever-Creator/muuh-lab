@@ -3,114 +3,164 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ARTIST PROFILE | MUUH LAB</title>
-    
+    <title>Artist Profile | MUUH LAB</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        :root { --gold: #D4AF37; --dark: #050505; --green: #25D366; }
-        body { background: var(--dark); color: white; font-family: 'Poppins', sans-serif; margin: 0; padding-bottom: 100px; }
+        :root { 
+            --gold: #D4AF37; 
+            --dark: #050505; 
+            --glass: rgba(255, 255, 255, 0.03);
+        }
+
+        body { 
+            background: var(--dark); 
+            color: white; 
+            font-family: 'Poppins', sans-serif; 
+            margin: 0; 
+            padding-bottom: 50px;
+            overflow-x: hidden;
+        }
+
+        /* Loading Screen */
+        #loading-overlay { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: var(--dark); display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; z-index: 1000; 
+        }
+        .spinner { width: 40px; height: 40px; border: 4px solid #222; border-top: 4px solid var(--gold); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Header & Image */
+        .back-btn { 
+            position: absolute; top: 20px; left: 20px; color: white; 
+            text-decoration: none; z-index: 100; background: rgba(0,0,0,0.6); 
+            padding: 10px 18px; border-radius: 50px; backdrop-filter: blur(10px);
+            font-size: 0.9rem; border: 1px solid rgba(255,255,255,0.1);
+        }
         
-        /* HEADER */
-        .header { height: 350px; position: relative; overflow: hidden; border-bottom: 2px solid #111; }
+        .profile-header { position: relative; width: 100%; height: 70vh; }
         #profile-img { width: 100%; height: 100%; object-fit: cover; }
-        .gradient-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, transparent 40%, rgba(5,5,5,1) 95%); }
-        .info-overlay { position: absolute; bottom: 20px; left: 20px; right: 20px; }
-        .name { font-size: 2.2rem; font-family: 'Playfair Display', serif; color: var(--gold); margin: 0; line-height: 1; }
-        .nick { font-style: italic; color: #aaa; font-size: 1rem; }
-
-        /* CONTENT */
-        .content-section { padding: 20px; }
-        h3 { border-left: 4px solid var(--gold); padding-left: 10px; font-size: 1.1rem; margin-bottom: 20px; }
-        .tiktok-container { border-radius: 15px; overflow: hidden; background: #000; min-height: 500px; margin-top: 10px; }
-
-        /* FIXED BUTTONS CHINI */
-        .action-btns { 
-            position: fixed; 
-            bottom: 0; 
-            left: 0; 
-            width: 100%; 
-            display: flex; 
-            z-index: 1000; 
-            box-shadow: 0 -5px 15px rgba(0,0,0,0.5);
+        .header-gradient { 
+            position: absolute; bottom: 0; width: 100%; height: 200px; 
+            background: linear-gradient(to top, var(--dark), transparent); 
         }
-        .btn { 
-            flex: 1; 
-            padding: 20px; 
-            text-align: center; 
-            text-decoration: none; 
-            font-weight: 600; 
-            font-size: 0.9rem; 
-            border: none; 
-            cursor: pointer; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-            gap: 8px;
-        }
-        .wa-btn { background: var(--green); color: white; }
-        .rate-btn { background: var(--gold); color: black; }
 
-        /* RATING MODAL/UI */
-        #rating-ui {
-            display: none; 
-            position: fixed; 
-            bottom: 85px; 
-            left: 5%; 
-            width: 90%; 
-            background: #151515; 
-            border: 1px solid var(--gold); 
-            border-radius: 15px; 
-            padding: 20px; 
-            text-align: center; 
-            z-index: 1001;
-            box-sizing: border-box;
+        /* Glass Card Details */
+        .artist-details {
+            padding: 35px 20px;
+            margin: -100px 15px 30px 15px;
+            background: rgba(15, 15, 15, 0.7);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 30px;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
         }
-        .stars { font-size: 2rem; margin: 15px 0; display: flex; justify-content: center; gap: 5px; }
-        .star { cursor: pointer; color: #333; transition: 0.3s; }
-        .star.active { color: var(--gold); text-shadow: 0 0 10px var(--gold); }
+
+        #artist-nick { color: var(--gold); text-transform: uppercase; letter-spacing: 4px; font-size: 0.75rem; font-weight: 600; display: block; margin-bottom: 8px; }
+        #artist-name { font-family: 'Playfair Display', serif; font-size: 2.4rem; margin: 0 0 15px 0; text-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+
+        /* Rating Stars */
+        .rating-section { margin: 25px 0; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.05); }
+        .stars { display: flex; justify-content: center; flex-direction: row-reverse; gap: 8px; }
+        .stars input { display: none; }
+        .stars label { font-size: 1.8rem; color: #222; cursor: pointer; transition: 0.3s; }
+        .stars label:hover, .stars label:hover ~ label, .stars input:checked ~ label { color: var(--gold); text-shadow: 0 0 15px rgba(212, 175, 55, 0.4); }
+        #vote-count { font-size: 0.8rem; color: #888; margin-top: 10px; display: block; }
+
+        /* Action Buttons */
+        .wa-btn {
+            background: var(--gold); color: black; padding: 15px 40px; 
+            border-radius: 50px; text-decoration: none; display: inline-block;
+            font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+            transition: 0.3s; box-shadow: 0 10px 20px rgba(212, 175, 55, 0.2);
+            font-size: 0.9rem;
+        }
+        .wa-btn:hover { transform: scale(1.05); box-shadow: 0 15px 30px rgba(212, 175, 55, 0.4); }
+
+        /* Portfolio Gallery & Skeleton */
+        .portfolio-section { padding: 0 20px 40px 20px; }
+        .section-title { color: var(--gold); font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; text-align: center; }
+        .portfolio-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .portfolio-item { width: 100%; height: 160px; border-radius: 15px; overflow: hidden; background: #111; border: 1px solid rgba(255,255,255,0.05); }
+        .portfolio-item img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; transition: 0.4s; }
+        .portfolio-item img:hover { opacity: 1; transform: scale(1.05); }
+
+        @keyframes shimmer {
+            0% { background-position: -468px 0; }
+            100% { background-position: 468px 0; }
+        }
+        .skeleton {
+            background: #111;
+            background-image: linear-gradient(to right, #111 0%, #1a1a1a 20%, #111 40%, #111 100%);
+            background-repeat: no-repeat;
+            background-size: 800px 100%;
+            animation: shimmer 1.5s infinite linear;
+        }
+
     </style>
 </head>
 <body>
 
-    <div class="header">
-       <img id="profile-img" src="https://via.placeholder.com/400x600?text=MUUH+LAB" alt="Artist">
-        <div class="gradient-overlay"></div>
-        <div class="info-overlay">
-            <h1 id="artist-name" class="name">Loading...</h1>
-            <span id="artist-nick" class="nick"></span>
-        </div>
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <p style="color: var(--gold); margin-top: 15px; letter-spacing: 2px; font-size: 0.8rem;">MUUH LAB STUDIO</p>
     </div>
 
-    <div class="content-section">
-        <h3>TikTok Updates</h3>
-        <div id="tiktok-feed" class="tiktok-container">
+    <a href="actors.html" class="back-btn">← Back</a>
+
+    <div class="profile-header">
+        <img id="profile-img" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%27600%27%20height%3D%27800%27%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20600%20800%27%3E%3Crect%20width%3D%27100%25%27%20height%3D%27100%25%27%20fill%3D%27%23111%27%2F%3E%3C%2Fsvg%3E" alt="Artist">
+        <div class="header-gradient"></div>
+    </div>
+
+    <div class="artist-details">
+        <span id="artist-nick">...</span>
+        <h1 id="artist-name">Inapakia...</h1>
+        
+        <div class="rating-section">
+            <div class="stars">
+                <input type="radio" name="star" id="star5" onclick="submitRating(5)"><label for="star5">★</label>
+                <input type="radio" name="star" id="star4" onclick="submitRating(4)"><label for="star4">★</label>
+                <input type="radio" name="star" id="star3" onclick="submitRating(3)"><label for="star3">★</label>
+                <input type="radio" name="star" id="star2" onclick="submitRating(2)"><label for="star2">★</label>
+                <input type="radio" name="star" id="star1" onclick="submitRating(1)"><label for="star1">★</label>
             </div>
-    </div>
-
-    <div id="rating-ui">
-        <p style="margin:0; font-weight: 600;">Unamkubali vipi ${name}?</p>
-        <div class="stars">
-            <span class="star" onclick="setRating(1)">★</span>
-            <span class="star" onclick="setRating(2)">★</span>
-            <span class="star" onclick="setRating(3)">★</span>
-            <span class="star" onclick="setRating(4)">★</span>
-            <span class="star" onclick="setRating(5)">★</span>
+            <span id="vote-count">⭐ Calculating Ratings...</span>
         </div>
-        <button onclick="submitRate()" style="width:100%; background:var(--gold); border:none; padding:12px; border-radius:8px; font-weight:bold;">TUMA RATING</button>
-        <p onclick="closeRating()" style="margin-top:10px; font-size: 0.8rem; color:#888; cursor:pointer;">Funga</p>
+
+        <a id="whatsapp-link" href="#" class="wa-btn">Hire Talent</a>
+    </div>
+<div class="hire-section" style="margin-top: 30px; padding: 20px; background: rgba(255,255,255,0.02); border-radius: 20px; border: 1px solid rgba(212,175,55,0.1);">
+    <h3 style="color: var(--gold); font-size: 1rem; margin-bottom: 20px;">BOOK THIS TALENT</h3>
+    <div class="form-group" style="text-align: left; margin-bottom: 15px;">
+        <label style="font-size: 0.7rem; color: #888;">JINA LAKO</label>
+        <input type="text" id="client-name" style="width:100%; background:#000; border:1px solid #333; padding:12px; border-radius:10px; color:white;">
+    </div>
+    <div class="form-group" style="text-align: left; margin-bottom: 15px;">
+        <label style="font-size: 0.7rem; color: #888;">KAZI (Mf: Movie, Ad, Photoshoot)</label>
+        <input type="text" id="client-job" style="width:100%; background:#000; border:1px solid #333; padding:12px; border-radius:10px; color:white;">
+    </div>
+    <button onclick="sendBooking()" class="wa-btn" style="width: 100%;">TUMA MAOMBI KWA WHATSAPP</button>
+</div>
+    <div class="portfolio-section">
+        <h3 class="section-title">LATEST WORKS</h3>
+        <div class="portfolio-grid" id="portfolio-gallery">
+            <div class="portfolio-item skeleton"></div>
+            <div class="portfolio-item skeleton"></div>
+            <div class="portfolio-item skeleton"></div>
+            <div class="portfolio-item skeleton"></div>
+        </div>
     </div>
 
-    <div class="action-btns">
-        <a id="wa-link" href="#" class="btn wa-btn">
-            <span>💬</span> WHATSAPP
-        </a>
-        <button onclick="toggleRating()" class="btn rate-btn">
-            <span>⭐</span> RATE ARTIST
-        </button>
-    </div>
+    <div id="tiktok-container" style="padding: 0 15px; margin-bottom: 30px;"></div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyAlbRzPaXf4Tw_f9oFM39Ca4Un0GsyvFeI",
@@ -126,58 +176,98 @@
 
         const urlParams = new URLSearchParams(window.location.search);
         const artistId = urlParams.get('id');
-        let currentRating = 0;
 
-        if (artistId) {
-            database.ref('actors/' + artistId).once('value', (snapshot) => {
+        if (!artistId) {
+            window.location.href = 'actors.html';
+        } else {
+            database.ref('actors/' + artistId).once('value').then((snapshot) => {
                 const data = snapshot.val();
                 if (data) {
-                    document.getElementById('artist-name').innerText = data.name;
-                    document.getElementById('artist-nick').innerText = '"' + data.nickname + '"';
-                    document.getElementById('profile-img').src = data.imageUrl;
+                    // 1. Jaza Jina na Picha
+                    document.getElementById('artist-name').innerText = data.name || "Anonymous";
+                    document.getElementById('artist-nick').innerText = data.nickname || "Professional Talent";
                     
-                    // WhatsApp
-                    const phone = data.phone || "255700000000"; 
-                    document.getElementById('wa-link').href = `https://wa.me/${phone}?text=Habari ${data.name}, nimekuona kupitia MUUH LAB!`;
+                    if (data.imageUrl) {
+                        document.getElementById('profile-img').src = data.imageUrl;
+                    }
+                    
+                    if (data.phone) {
+                        document.getElementById('whatsapp-link').href = "https://wa.me/" + data.phone.replace('+', '');
+                    }
 
-                    // TikTok
-                    const tiktokDiv = document.getElementById('tiktok-feed');
-                   // Hakikisha username haina @ unapo-upload kule Admin
-const tiktokUser = data.username.replace('@', ''); // Hii inasafisha kama uliweka @ kwa bahati mbaya
+                    // 2. Latest Works Logic
+                    const gallery = document.getElementById('portfolio-gallery');
+                    if (data.works && Array.isArray(data.works)) {
+                        gallery.innerHTML = ''; 
+                        data.works.forEach((workImageUrl) => {
+                            const item = document.createElement('div');
+                            item.className = 'portfolio-item';
+                            const img = document.createElement('img');
+                            img.src = workImageUrl;
+                            item.appendChild(img);
+                            gallery.appendChild(item);
+                        });
+                    } else {
+                        const placeholderImg = "data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%27300%27%20height%3D%27300%27%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20300%20300%27%3E%3Crect%20width%3D%27100%25%27%20height%3D%27100%25%27%20fill%3D%27%231a1a1a%27%2F%3E%3C%2Fsvg%3E";
+                        gallery.innerHTML = `
+                            <div class="portfolio-item"><img src="${placeholderImg}"></div>
+                            <div class="portfolio-item"><img src="${placeholderImg}"></div>
+                            <div class="portfolio-item"><img src="${placeholderImg}"></div>
+                            <div class="portfolio-item"><img src="${placeholderImg}"></div>
+                        `;
+                    }
 
-tiktokDiv.innerHTML = `
-    <blockquote class="tiktok-embed" 
-        cite="https://www.tiktok.com/@${tiktokUser}" 
-        data-unique-id="${tiktokUser}" 
-        style="max-width: 605px; min-width: 325px;">
-        <section>
-            <a target="_blank" href="https://www.tiktok.com/@${tiktokUser}?refer=embed">@${tiktokUser}</a>
-        </section>
-    </blockquote>
-`;
+                    // 3. TikTok & Rating
+                    if (data.username) {
+                        loadTikTok(data.username);
+                    }
+                    loadRating(); 
 
-// Muhimu: Pakia script ya TikTok baada ya kuandika HTML
-const script = document.createElement('script');
-script.src = "https://www.tiktok.com/embed.js";
-script.async = true;
-document.body.appendChild(script);
-        // RATING LOGIC
-        function toggleRating() { document.getElementById('rating-ui').style.display = 'block'; }
-        function closeRating() { document.getElementById('rating-ui').style.display = 'none'; }
-        
-        function setRating(n) {
-            currentRating = n;
-            const stars = document.querySelectorAll('.star');
-            stars.forEach((s, index) => {
-                s.classList.toggle('active', index < n);
+                    // 4. Ondoa Loading Overlay
+                    document.getElementById('loading-overlay').style.display = 'none';
+                } else {
+                    alert("Msanii hajapatikana!");
+                    window.location.href = 'actors.html';
+                }
+            }).catch((err) => {
+                console.error(err);
+                document.getElementById('loading-overlay').innerHTML = "<p style='color:white;'>Error Loading Data.</p>";
             });
         }
 
-        function submitRate() {
-            if(currentRating === 0) return alert("Gusa nyota kwanza!");
-            // Hapa unaweza kusave rating Firebase ukipenda, kwa sasa tunaweka alert
-            alert("Asante! Umeipa " + currentRating + " Stars.");
-            closeRating();
+        function loadTikTok(username) {
+            let user = username.replace('@', '').split('/').pop().trim();
+            const container = document.getElementById('tiktok-container');
+            container.innerHTML = `
+                <blockquote class="tiktok-embed" cite="https://www.tiktok.com/@${user}" data-unique-id="${user}" style="width:100%;">
+                    <section><a target="_blank" href="https://www.tiktok.com/@${user}">@${user}</a></section>
+                </blockquote>`;
+            
+            const s = document.createElement('script');
+            s.src = "https://www.tiktok.com/embed.js";
+            s.async = true;
+            document.body.appendChild(s);
+        }
+
+        function submitRating(rating) {
+            const ratingRef = database.ref('actors/' + artistId + '/ratings');
+            ratingRef.transaction((curr) => {
+                if (!curr) return { total_points: rating, count: 1 };
+                return { total_points: (curr.total_points || 0) + rating, count: (curr.count || 0) + 1 };
+            }).then(() => alert("Kura Imepokelewa! ⭐"));
+        }
+
+        function loadRating() {
+            database.ref('actors/' + artistId + '/ratings').on('value', (snap) => {
+                const r = snap.val();
+                const v = document.getElementById('vote-count');
+                if (r && r.count > 0) {
+                    const avg = (r.total_points / r.count).toFixed(1);
+                    v.innerText = `⭐ ${avg} / 5.0 (${r.count} votes)`;
+                } else {
+                    v.innerText = "No ratings yet. Rate first!";
+                }
+            });
         }
     </script>
 </body>
